@@ -1,0 +1,178 @@
+PhoBERT: Pre-trained language models for Vietnamese
+Dat Quoc Nguyen and Anh Tuan Nguyen
+VinAI Research, Vietnam
+{v.datnq9, v.anhnt496}@vinai.io
+
+Abstract word segmentation before applying BPE on the Vietnamese
+Oo Ww ceeded PSR ERT wih ie See "hae" Wikipedia corpus, ETNLP in fact does not publicly release
+ql aiid naan 18 first pablic lat subeln saline any pre-trained BERT-based model.' As a result, we find dif-
+© gual language models neseatinel for Vietnamese. Paane a applying aces aad an gy aerate ie
+N We show that PhoBERT improves the state-of- ae rile Se . = t ss .
+
+Z hesart-i Itiple Vietnamese-specific NLP tasks To handle the two concerns above, we train the first large-
+= Pi eee ene Caen ae ne Ee oo scale monolingual BERT-based “base” and “large” models
+’ including Part-of-speech tagging, Named-entity ine a 20GB Socal We waesieas ee
+
+sognition and Natural language inference. We using a word-level Vietnamese corpus. We evaluate
+> Poi PhoBERT to facilitate fut ae i anil our models on three downstream Vietnamese NLP tasks: the
+AN cong _ aie oN ek ee n two most common ones of Part-of-speech (POS) tagging and
+downstream applications for Vietnamese NLP. Our ; : et =
+PRORERT ié teleased de IhteHE?7/aithob Named-entity recognition (NER), and a language understand-
+= Vi noe, . h/Ph aon — ing task of Natural language inference (NLI). Experimental
+—] selaiaieaihiaiie pahotirteantee = . results show that our models obtain state-of-the-art (SOTA)
+CJ . performances for all three tasks. We release our models under
+nH 1 Introduction the name PhoBERT in popular open-source libraries, hoping
+oS Pre-trained language models, especially BERT—the Bidirec- that PhoBERT can serve as a strong baseline for future Viet-
+tional Encoder Representations from Transformers [Devlin 2@mese NLP research and applications.
+—— et al., 2019], have recently become extremely popular and
+> helped to produce significant improvement gains for various 2 PhoBERT
+wt NLP tasks. The ee of pre-trained BERT and its variants This section outlines the architecture and describes the pre-
+= na Mngery been limited mi ae Eagan hati g nage For et training data and optimization setup we use for PhoBERT.
+cS __ Languages, one could retrain a Janguage-specilic model using Architecture: PhoBERT has two versions PhoBERT)ase and
+- the a architecture [Vu et al., 21; Martin et al., 2019; PhoBERT jarge, using the same configuration as BERT pase and
+z de Vries et al., 2019] or employ existing pre-trained multi- BERT, respectively. PhoBERT pre-training approach is
+ae — : : ; ‘ arges Tes .
+oS rae praradasadiiaee Ae a al., 2019; Conneau et based on RoBERTa [Liu et al., 2019] which optimizes the
+= In terms of Vietnamese language modeling, to the best of Dates a mae ERG more ropes sai oF vncom.-
+on = a ek ae Sie doeai te as _ 7 oe pressed texts after cleaning. This dataset is a combination of
+: - agri a si ental . Vu, ! if Ol - d alen two corpora: (1) the first one is the Vietnamese Wikipedia cor-
+S< ee eee g ge Se Be: ’ sii pus (~1GB), and (ii) the second corpus (~19GB) is a subset
+cu a the one bi oertta ee as eee the re of a 40GB Vietnamese news corpus after filtering out similar
+FET ee Mimmcan News and dplictons We employ RDRSegmentr Neuen
+5 capa - i ae , é et al., rom VnCore u et al., to perform
+a iat e a ace et pe fo es viet word and sentence segmentation on the pre-training dataset,
+ee 7s resulting in ~145M word-segmented sentences (~3B word
+compressed), while pre-trained language models can be sig- tokens). Different from RoBERTa, we then apply fast BPE
+nificantly improved by using eee data [Liu et al., 2019]. [Sennrich et al., 2016] to segment these sentences with sub-
+Fea ne Sa Lie Yoru osing vocabulary size f 64K sword pes
+2 savages costae sabes arumntekacat . ptimization: We employ the Ro a implementation in
+fan Eel Eaiemiiences So aed eo enema fairseg [Ott et al., 2019]. Each sentence contains at most
+syllables that constitute words when written in Vietnamese). 220 ENDWAR MkeRES (Dee, SARRORN Giieaicee a WmeeS
+Without doing a pre-process step of Vietnamese word seg- ‘https: //github.com/vietnlp/etnlp — last access
+mentation, those models directly apply Bype-Pair encoding on the 28th February 2020.
+(BPE) methods [Sennrich et al., 2016] to the syllable-level *https: //github.com/binhvg/news-corpus,
+pre-training Vietnamese data. Also, although performing crawled from a wide range of websites with 14 different topics.Table 1: Performance scores (in %) on test sets. “Acc.” abbreviates accuracy. [de], [%*]. [@] and [@] denote results reported by Nguyen et al.
+(2017), Nguyen (2019), Vu et al. (2018) and Vu et al. (2019), respectively. “mBiLSTM” denotes a BiLSTM-based multilingual embedding
+method. Note that there are higher NLI results reported for XLM-R when fine-tuning on the concatenation of all 15 training datasets in the
+XNLI corpus. However, those results are not comparable as we only use the Vietnamese monolingual training data for fine-tuning.
+POS tagging NER NEI
+Model ee,
+RDRPOSTagger [Nguyen et al., 2014] [&] 95.1 | BiLSTM-CNN-CRF [@] 88.3 | mBiLSTM [Artetxe and Schwenk, 2019] 72.0
+BiLSTM-CNN-CRF [Ma and Hovy, 2016] [&] | 95.4 | VnCoreNLP-NER [Vu et al., 2018] | 88.6 | multilingual BERT [Wu and Dredze, 2019] | 69.5
+VnCoreNLP-POS [Nguyen et al., 2017] 95.9 | VNER [Nguyen et al., 2019b] 89.6 | XLMwumerim [Conneau and Lample, 2019] | 76.6
+joint WPD Rene 20 ai aan _ 07
+jointWPD [Neguyen, 2019] 96.0 | VnCoreNLP-NER +ETNLP [@] | 91.3 | XLM-Riaye [Conneau et al., 2019] 79.7
+ar i
+than 256 subword tokens are skipped). Following Liu et based models VnCoreNLP-POS (i.e. VnMarMoT) and join-
+al. [2019], we optimize the models using Adam [Kingma and — tWPD. For NER, PhoBERTjse is 1.1 points higher F; than
+Ba, 2014]. We use a batch size of 1024 and a peak learn- PhoBERT pase Which is 2+ points higher than the feature-
+ing rate of 0.0004 for PhoBERTpase, and a batch size of 512 and neural network-based models VnCoreNLP-NER and
+and a peak learning rate of 0.0002 for PhoBERTja:e. We BiLSTM-CNN-CREF trained with the BERT-based ETNLP
+run for 40 epochs (here, the learning rate is warmed up for word embeddings [Vu et al., 2019]. For NLI, PhoBERT out-
+2 epochs). We use 4 Nvidia V100 GPUs (16GB each), result- performs the multilingual BERT and the BERT-based cross-
+ing in about 540K training steps for PhROBERT pase and 1.08M lingual model with a new translation language modeling ob-
+steps for PhoBERTyarge. We pretrain PhoBERT ase during 3 jective XLMwim+tim by large margins. PhoBERT also per-
+weeks, and then PhoBERTharge during 5 weeks. forms slightly better than the cross-lingual model XLM-R,
+but using far fewer parameters than XLM-R (base: 135M vs.
+3 Experiments =e large: eae vs. 560M). ; help sienit
+Bien — iscussion: Using more pre-training data can help signifi-
+Renetiineitelactuns Boe he kecwncatonroon Vineness els [Liu et al., 2019]. Thus it is not surprising that PhoBERT
+POS tagging and NER tasks, we follow the VnCoreNLP setup Tee eee ee enon ET thers
+[Vu et al., 2018], using standard benchmarks of the VLSP PhoBERT = loys 20GB of PPeureia. eat while fiaae
+2013 POS tagging dataset and the VLSP 2016 NER dataset. 1-1 cmolon the 1GB Vietnamese Wikipedia ncaa
+[Nguyen et al., 2019a]. For NLI, we use the Vietnamese val- Galea air cia eds Cai hE RC
+idation and test sets from the XNLI corpus v1.0 [Conneau 2.5TB pre-traini cs a taining 137GB of Vietn: Reali
+et al., 2018] where the Vietnamese training data is machine- —— it nae pe a. bi . ae
+translated from English. Unlike the 2013 POS tagging and re el a = Re es a BERT aie : an our pre-
+2016 NER datasets which provide the gold word segmenta- ae ee _ a ee P a a ee
+tion, for NLI, we use RDRSegmenter to segment the text into seat wen Se Smog pez och reas ie gee nh ah i‘
+ae applying fast BPE to produce subwords from to the syllable-level pre-training Vietnamese data. Clearly,
+Following Devlin et al. [2019], for POS tagging and NER, word-level information plays a crucial role for the Viet-
+we append a linear prediction layer on top of the PhoBERT eee hae Gay Bi eRHIADGIN Pee Or LE ies ware Seg
+architecture w.r.t. the first subword token of each word. We nee ee ts ne pestetatinys See
+fine-tune PhoBERT for each task and each dataset indepen- oe ait nemalones Thiet at S0Ig) dels still out-
+conte eae Pn eee ae Experiments also show that using a straightforward fine-
+. . ace tuning manner as we do can lead to SOTA results. Note that
+fairseq for NLI. We use AdamW [Loshchilov and Hutter, se aot ie eden Wiistada Rees rearin tek Gest Sin ahiced aU en eae
+2019] with a fixed learning rate of 1.e-5 and a batch size of th oe ee scretfesl Hi Pe sai ‘a :
+32. We fine-tune in 30 training epochs, evaluate the task per- ee ee we eee ee a
+formance after each epoch on the validation set (here, early .
+stopping is applied when there is no improvement after 5 con- 4 Conclusion
+tinuous epochs), and then select the best model to report the In this paper, we have presented the first public large-scale
+final result on the test set. PhoBERT language models for Vietnamese. We demonstrate
+Main results: Table | compares our PhoBERT scores with the usefulness of PhoBERT by producing new state-of-the-
+the previous highest reported results, using the same exper- art performances for three Vietnamese NLP tasks of POS
+imental setup. PhoBERT helps produce new SOTA results tagging, NER and NLI. By publicly releasing PhoBERT, we
+for all the three tasks, where unsurprisingly PhoBERTha,»- ob- hope that it can foster future research and applications in Viet-
+tains higher performances than PhoBERT ase. namse NLP. Our PhoBERT and its usage are available at:
+For POS tagging, PhoBERT obtains about 0.8% abso- https://github.com/VinAIResearch/PhoBERT.
+lute higher accuracy than the feature- and neural network-References [Nguyen et al.,2017] Dat Quoc Nguyen, Thanh Vu,
+[Artetxe and Schwenk, 2019] Mikel Artetxe and Holger Dai Quoc Nguyen, Mark Dras, and Mark Johnson. From
+Schwenk. Massively multilingual sentence embeddings word segmentation to POS tagging for Vietnamese. In
+for zero-shot cross-lingual transfer and beyond. TACL, Proceedings of ALTA, pages 108-113, 2017.
+7:597-610, 2019. [Nguyen et al., 2018] Dat Quoc Nguyen, Dai Quoc Nguyen,
+
+[Conneau and Lample, 2019] Alexis Conneau and Guil- Thanh Vu, Mark Dras, and Mark Johnson. A Fast and
+laume Lample. Cross-lingual language model pretraining. Accurate Vietnamese Word Segmenter. In Proceedings of
+In Proceedings of NeurIPS, pages 7059-7069, 2019. LREC, pages 2582-2587, 2018.
+
+[Conneau et al., 2018] Alexis Conneau, Ruty Rinott, Guil- [Nguyen ef al., 2019a] Huyen Nguyen, Quyen Ngo, Luong
+laume Lample, Holger Schwenk, Ves Stoyanov, Adina Vu, Vu Tran, and Hien Nguyen. VLSP Shared Task:
+Williams, and Samuel R. Bowman. XNLI: Evaluating Named Entity Recognition. Journal of Computer Science
+cross-lingual sentence representations. In Proceedings of and Cybernetics, 34(4):283-294, 2019.
+
+EMNLP, pages 2475-2485, 2018. [Nguyen et al.,2019b] Kim Anh Nguyen, Ngan Dong, and
+
+[Conneau et al., 2019] Alexis Conneau, Kartikay Khandel- Cam-Tu Nguyen. Attentive neural network for named en-
+wal, Naman Goyal, Vishrav Chaudhary, Guillaume Wen- tity recognition in vietnamese. In Proceedings of RIVF,
+zek, Francisco Guzman, Edouard Grave, Myle Ott, Luke 2019.
+
+Zettlemoyer, and Veselin Stoyanov. Unsupervised cross- [Nguyen, 2019] Dat Quoc Nguyen. A neural joint model
+lingual representation learning at scale. arXiv preprint, for Vietnamese word segmentation, POS tagging and de-
+arXiv:1911.02116, 2019. pendency parsing. In Proceedings of ALTA, pages 28-34,
+
+[de Vries et al., 2019] Wietse de Vries, Andreas van Cranen- 2019.
+burgh, Arianna Bisazza, Tommaso Caselli, Gertjan van [Qt et al., 2019] Myle Ott, Sergey Edunov, Alexei Baevski,
+Noord, and Malvina Nissim. BERTje: A Dutch BERT Angela Fan, Sam Gross, Nathan Ng, David Grangier, and
+Model. arXiv preprint, arXiv:1912.09582, 2019. Michael Auli. fairseq: A fast, extensible toolkit for se-
+
+[Devlin et al., 2019] Jacob Devlin, Ming-Wei Chang, Ken- quence modeling. In Proceedings of NAACL-HLT 2019:
+ton Lee, and Kristina Toutanova. BERT: Pre-training of Demonstrations, 2019.
+deep bidirectional transformers for language understand- ——_[Sennrich et al., 2016] Rico Sennrich, Barry Haddow, and
+ing. In Proceedings of NAACL, pages 4171-4186, 2019. Alexandra Birch. Neural machine translation of rare words
+
+[Kingma and Ba, 2014] Diederik P. Kingma and Jimmy Ba. with subword units. In Proceedings of ACL, pages 1715—
+Adam: A Method for Stochastic Optimization. arXiv 1725, 2016.
+preprint, arXiv:1412.6980, 2014. [Vu et al., 2018] Thanh Vu, Dat Quoc Nguyen, Dai Quoc
+
+[Liu et al., 2019] Yinhan Liu, Myle Ott, Naman Goyal, Nguyen, Mark Dras, and Mark Johnson. WnCoreNLP: A
+Jingfei Du, Mandar Joshi, Dangi Chen, Omer Levy, Vietnamese Natural Language Processing Toolkit. In Pro-
+Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov. ceedings of NAACL: Demonstrations, pages 56-60, 2018.
+RoBERTa: A Robustly Optimized BERT Pretraining Ap- [yy ¢7 al,, 2019] Xuan-Son Vu, Thanh Vu, Son Tran, and Lili
+proach. arXiv preprint, arXiv: 1907.11692, 2019. Jiang. ETNLP: A visual-aided systematic approach to se-
+
+[Loshchilov and Hutter, 2019] Ilya Loshchilov and Frank lect pre-trained embeddings for a downstream task. In Pro-
+Hutter. Decoupled weight decay regularization. In Pro- ceedings of RANLP, pages 1285-1294, 2019.
+ceedings of ICLR, 2019. [Wu and Dredze, 2019] Shijie Wu and Mark Dredze. Beto,
+
+[Ma and Hovy, 2016] Xuezhe Ma and Eduard Hovy. End- bentz, becas: The surprising cross-lingual effectiveness of
+to-end sequence labeling via bi-directional LSTM-CNNs- BERT. In Proceedings of EMNLP-IJCNLP, pages 833-
+CRF. In Proceedings of ACL, pages 1064-1074, 2016. 844, 2019.
+
+[Martin et al., 2019] Louis Martin, Benjamin Muller, Pe-
+dro Javier Ortiz Suarez, Yoann Dupont, Laurent Ro-
+mary, Eric Villemonte de la Clergerie, Djamé Seddah, and
+Benoit Sagot. CamemBERT: a Tasty French Language
+Model. arXiv preprint, arXiv:1911.03894, 2019.
+
+[Nguyen and Verspoor, 2018] Dat Quoc Nguyen and Karin
+Verspoor. An improved neural network model for joint
+POS tagging and dependency parsing. In Proceedings of
+the CoNLL 2018 Shared Task, pages 81-91, 2018.
+
+[Nguyen et al., 2014] Dat Quoc Nguyen, Dai Quoc Nguyen,
+
+Dang Duc Pham, and Son Bao Pham. RDRPOSTagger:
+A Ripple Down Rules-based Part-Of-Speech Tagger. In
+Proceedings of the Demonstrations at EACL, pages 17-20,
+2014.
